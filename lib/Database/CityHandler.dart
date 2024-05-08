@@ -57,5 +57,28 @@ class CityHandler{
     return cities;
   }
 
+  Future<int> getCityCount(String cityName, String location) async {
+    List<Map<String, dynamic>> result = await db.rawQuery(
+      'SELECT COUNT($columnCityName) FROM $tableName WHERE $columnCityName = ? and $columnLocation = ?',
+      [cityName, location],
+    );
+    int count = Sqflite.firstIntValue(result) ?? 0;
+    return count;
+  }
+
+
+  Future<int> getCityInRoutesCount(int Id) async {
+    List<Map<String, dynamic>> result = await db.rawQuery(
+      'SELECT COUNT($tableName.$columnCityName) FROM $tableName INNER JOIN ROUTE ON ROUTE.POINT_OF_DEPARTUREID = CITY.CITYNAMEID OR ROUTE.POINT_OF_DESTINATIONID = CITY.CITYNAMEID WHERE CITY.$columnCityID = ?',
+      [Id],
+    );
+    int count = Sqflite.firstIntValue(result) ?? 0;
+    return count;
+  }
+
+
+
+
+
   Future close() async => db.close();
 }

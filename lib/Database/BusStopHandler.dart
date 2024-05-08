@@ -5,7 +5,6 @@ import 'package:sqflite/sqflite.dart';
 const String tableName = 'BUSSTOP';
 const String columnBusStopId = 'BUSSTOPID';
 const String columnBusStopName = 'BUSSTOPNAME';
-const String columnLocation = 'LOCATION';
 const String columnRouteId = 'ROUTEID';
 const String columnBusStopOrder = 'BUSSTOPORDER';
 
@@ -20,7 +19,6 @@ class BusStopHandler{
     await db.execute('''
         create table IF NOT EXISTS $tableName ($columnBusStopId INTEGER PRIMARY KEY autoincrement,
                                 $columnBusStopName TEXT not null,
-                                $columnLocation TEXT not null,
                                 $columnRouteId INTEGER not null,
                                 $columnBusStopOrder INTEGER not null,
                                 FOREIGN KEY ($columnRouteId) REFERENCES ROUTE(ROUTEID)) 
@@ -32,7 +30,7 @@ class BusStopHandler{
   }
   Future<int> getBusStopId(String name, int routeId) async{
     List<Map> maps = await db.query(tableName,
-        columns: [columnBusStopId, columnBusStopName, columnLocation, columnRouteId, columnBusStopOrder],
+        columns: [columnBusStopId, columnBusStopName, columnRouteId, columnBusStopOrder],
         where: '$columnBusStopName = ? AND $columnRouteId = ?',
         whereArgs: [name, routeId]);
     if(maps.isNotEmpty){

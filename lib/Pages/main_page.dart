@@ -37,8 +37,12 @@ class _MainPageState extends State<MainPage> {
   late Future<List<Map<String, dynamic>>> _tripFuture;
   String firstText = 'Откуда';
   String secondText = 'Куда';
+  int firstTextId = 0;
+  int secondTextId = 0;
   String _textFromField1 = '';
   String _textFromField2 = '';
+  int _textFromFieldID1 = 0;
+  int _textFromFieldID2 = 0;
   Future<void> _initFuture = initializeDateFormatting('ru_RU', null);
   String formattedDate = DateFormat('dd MMMM yyyy (EEEE)', 'ru_RU').format(
       DateTime.now());
@@ -50,6 +54,10 @@ class _MainPageState extends State<MainPage> {
       _textFromField2 = secondText;
       firstText = _textFromField2;
       secondText = _textFromField1;
+      _textFromFieldID1 = firstTextId;
+      _textFromFieldID2 = secondTextId;
+      firstTextId = _textFromFieldID2;
+      secondTextId = _textFromFieldID1;
       if((firstText != 'Откуда' && firstText != 'Куда') && (secondText != 'Куда' && secondText != 'Откуда')){
         _tripFuture = _searchTrips();
       }
@@ -94,7 +102,7 @@ class _MainPageState extends State<MainPage> {
       setState(() {
         _showResult = true;
       });
-      return await TripHandler(dbHelper.db).getAllTrips(firstText, secondText, DateFormat('dd MMMM', 'ru_RU').format(pickedValue));
+      return await TripHandler(dbHelper.db).getAllTrips(firstTextId, secondTextId, DateFormat('dd MMMM', 'ru_RU').format(pickedValue));
     }
     else{
       showDialog(
@@ -141,30 +149,115 @@ class _MainPageState extends State<MainPage> {
     }
   }
 
+  String _getDate(String date){
+    String routeTime = '';
+    bool daysAdded = false;
+    bool hoursAdded = false;
+
+
+    if(date[0] == '0' && date[1] != '0'){
+      routeTime += '${date[1]} д';
+      daysAdded = true;
+    }
+    else if((date[0] != '0' && date[1] != '0') || (date[0] != '0' && date[1] == '0')){
+      routeTime += '${date[0]}${date[1]} д';
+      daysAdded = true;
+    }
+    else{
+      routeTime += '';
+      daysAdded = false;
+    }
+
+    if(date[5] == '0' && date[6] != '0'){
+      if(daysAdded){
+        routeTime += " ";
+      }
+      routeTime += '${date[5]} д';
+      hoursAdded = true;
+    }
+    else if((date[5] != '0' && date[6] != '0') || (date[5] != '0' && date[6] == '0')){
+      if(daysAdded){
+        routeTime += " ";
+      }
+      routeTime += '${date[5]}${date[6]} д';
+      hoursAdded = true;
+    }
+    else{
+      routeTime += '';
+      hoursAdded = false;
+    }
+
+
+    if(date[10] == '0' && date[11] != '0'){
+      if(hoursAdded){
+        routeTime += " ";
+      }
+      routeTime += '${date[10]} д';
+    }
+    else if((date[10] != '0' && date[11] != '0') || (date[10] != '0' && date[11] == '0')){
+      if(hoursAdded){
+        routeTime += " ";
+      }
+      routeTime += '${date[10]}${date[11]} д';
+    }
+    else{
+      routeTime += '';
+    }
+
+    return routeTime;
+  }
+
+
   Future<void> _openCitySearchPage(String selectedCity) async {
+    bool resultBack = false;
     if (selectedCity == 'first') {
-      final selectedCity = await Navigator.push(context, MaterialPageRoute(
+      String selectedCity = '';
+      int id = 0;
+
+      dynamic result = await Navigator.push(context, MaterialPageRoute(
           builder: (context) => CitySearchPage(selectedCity: secondText)));
-      if (selectedCity != null) {
+      if (result != null) {
+        resultBack = result['result'];
+        if(resultBack == true){
+          selectedCity = result['cityName'];
+          id = result['id'];
+        }
+      }
+      if (resultBack == true) {
         setState(() {
           firstText = selectedCity;
+          firstTextId = id;
         });
 
-        final selectedCity2 = await Navigator.push(context, MaterialPageRoute(
+        String selectedCity2 = '';
+        int id2 = 0;
+        dynamic result2 = await Navigator.push(context, MaterialPageRoute(
             builder: (context) => CitySearchPage(selectedCity: firstText)));
+        if (result2 != null) {
+          selectedCity2 = result2['cityName'];
+          id2 = result2['id'];
+        }
         if (selectedCity2 != null) {
           setState(() {
             secondText = selectedCity2;
+            secondTextId = id2;
           });
         }
       }
     }
     else if (selectedCity == 'second') {
-      final selectedCity2 = await Navigator.push(context, MaterialPageRoute(
+      String selectedCity2 = '';
+      int id2 = 0;
+      dynamic result2 = await Navigator.push(context, MaterialPageRoute(
           builder: (context) => CitySearchPage(selectedCity: firstText)));
+      if (result2 != null) {
+        selectedCity2 = result2['cityName'];
+        id2 = result2['id'];
+      }
       if (selectedCity2 != null) {
         setState(() {
           secondText = selectedCity2;
+          secondTextId = id2;
         });
       }
     }
@@ -479,7 +572,7 @@ class _MainPageState extends State<MainPage> {
                         physics: const NeverScrollableScrollPhysics(),
                         itemBuilder: (BuildContext context, int index) {
                           double? dividerWith = getDividerWidth(trips[index]['ROUTE_TIME']);
-
+                          String routeTime = _getDate(trips[index]['ROUTE_TIME'].toString());
                           return ListTile(
                             contentPadding: const EdgeInsets.symmetric(horizontal: 10),
                             title: Container(
@@ -514,7 +607,7 @@ class _MainPageState extends State<MainPage> {
                                                   ),
                                                 ),),
 
-                                              Text(trips[index]['ROUTE_TIME'].toString()),
+                                              Text(routeTime),
                                               Padding(
                                                 padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                                                 child: SizedBox(

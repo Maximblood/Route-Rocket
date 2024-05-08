@@ -57,7 +57,7 @@ class _CitySearchPageState extends State<CitySearchPage> {
                           if (_controller.text != '') {
                             _controller.clear();
                           } else {
-                            Navigator.pop(context);
+                            Navigator.pop(context, {'result': false});
                           }
                         },
                         icon: Icon(Icons.clear),
@@ -89,7 +89,7 @@ class _CitySearchPageState extends State<CitySearchPage> {
                               title: Text(cities[index].cityName),
                               subtitle: Text(cities[index].location),
                               onTap: () {
-                                Navigator.pop(context, cities[index].cityName);
+                                Navigator.pop(context, {'result': true, 'cityName': cities[index].cityName, 'id': cities[index].id});
                               },
                             );
                           },

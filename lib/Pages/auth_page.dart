@@ -20,7 +20,9 @@ import 'package:kursovoy/Models/City.dart';
 import 'package:kursovoy/Models/Client.dart';
 import 'package:kursovoy/Models/Role.dart';
 import 'package:kursovoy/Models/Trip.dart';
+import 'package:kursovoy/Pages/city_admin_page.dart';
 import 'package:kursovoy/Pages/driver_page.dart';
+import 'package:kursovoy/Pages/route_admin_page.dart';
 import 'package:kursovoy/Providers/AuthProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:kursovoy/Models/Route.dart'  as Rroute;
@@ -1216,9 +1218,165 @@ class _AuthPageState extends State<AuthPage> {
           color: Color.fromRGBO(246, 246, 246, 1.0),
           height: height,
           width: double.infinity,
-          padding: const EdgeInsets.all(15),
           child: SingleChildScrollView(
-            child: Text('admin'),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => CityAdminPage(databaseNotifier: Provider.of<DatabaseNotifier>(
+                              context,
+                              listen: false))),
+                        );
+                      },
+                      child: Container(
+                        width: 190,
+                        padding: EdgeInsets.fromLTRB(30,15,30,15),
+                        decoration: BoxDecoration(
+                          border: Border.all(),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Column(
+                          children: [
+                            Icon(Icons.location_city, size: 40),
+                            SizedBox(height: 10),
+                            Text('Города', style: TextStyle(fontSize: 17),),
+                          ],
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => RouteAdminPage(databaseNotifier: Provider.of<DatabaseNotifier>(
+                              context,
+                              listen: false))),
+                        );
+
+                      },
+                      child: Container(
+                        width: 190,
+                        padding: EdgeInsets.fromLTRB(30,15,30,15),
+                        decoration: BoxDecoration(
+                          border: Border.all(),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Column(
+                          children: [
+                            Icon(Icons.map, size: 40),
+                            SizedBox(height: 10),
+                            Text('Маршруты', style: TextStyle(fontSize: 17)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 20,),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+
+
+                      },
+                      child: Container(
+                        width: 190,
+                        padding: EdgeInsets.fromLTRB(30,15,30,15),
+                        decoration: BoxDecoration(
+                          border: Border.all(),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Column(
+                          children: [
+                            Icon(Icons.confirmation_number, size: 40),
+                            SizedBox(height: 10),
+                            Text('Рейсы', style: TextStyle(fontSize: 17),),
+                          ],
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+
+
+                      },
+                      child: Container(
+                        width: 190,
+                        padding: EdgeInsets.fromLTRB(30,15,30,15),
+                        decoration: BoxDecoration(
+                          border: Border.all(),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Column(
+                          children: [
+                            Icon(Icons.receipt, size: 40),
+                            SizedBox(height: 10),
+                            Text('Билеты', style: TextStyle(fontSize: 17)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 20,),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+
+
+                      },
+                      child: Container(
+                        width: 190,
+                        padding: EdgeInsets.fromLTRB(30,15,30,15),
+                        decoration: BoxDecoration(
+                          border: Border.all(),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Column(
+                          children: [
+                            Icon(Icons.directions_bus, size: 40),
+                            SizedBox(height: 10),
+                            Text('Маршрутки', style: TextStyle(fontSize: 17),),
+                          ],
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+
+
+                      },
+                      child: Container(
+                        width: 190,
+                        padding: EdgeInsets.fromLTRB(30,15,30,15),
+                        decoration: BoxDecoration(
+                          border: Border.all(),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Column(
+                          children: [
+                            Icon(Icons.person, size: 40),
+                            SizedBox(height: 10),
+                            Text('Пользователи', style: TextStyle(fontSize: 17)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+              ],
+            ),
           ),
         ),
       ),

@@ -75,7 +75,7 @@ class TripHandler{
 
 
 
-  Future<List<Map<String, dynamic>>> getAllTrips(String pointOfDeparture, String pointOfDestination, String routeTime) async{
+  Future<List<Map<String, dynamic>>> getAllTrips(int pointOfDeparture, int pointOfDestination, String routeTime) async{
     String sqlQuery = '''
     SELECT $tableName.$columnTripId, ROUTE.$columnRouteId ,$tableName.$columnDepartureDate, $tableName.$columnDestinationDate, $tableName.$columnDepartureTime, $tableName.$columnDestinationTime, $tableName.$columnCost, $tableName.$columnCountFreePlaces, ROUTE_TIME, CITY_DEPARTURE.CITYNAME as DepartureCityName,
       CITY_DESTINATION.CITYNAME as DestinationCityName
@@ -83,12 +83,15 @@ class TripHandler{
     INNER JOIN ROUTE ON ROUTE.$columnRouteId = $tableName.$columnRouteId
     INNER JOIN CITY as CITY_DEPARTURE ON ROUTE.POINT_OF_DEPARTUREID = CITY_DEPARTURE.CITYNAMEID
     INNER JOIN CITY as CITY_DESTINATION ON ROUTE.POINT_OF_DESTINATIONID = CITY_DESTINATION.CITYNAMEID
-    WHERE DepartureCityName = ? and DestinationCityName = ? and $tableName.$columnDepartureDate = ? and $tableName.$columnStatus = ?
+    WHERE CITY_DEPARTURE.CITYNAMEID = ? and CITY_DESTINATION.CITYNAMEID = ? and $tableName.$columnDepartureDate = ? and $tableName.$columnStatus = ? 
   ''';
 
     List<Map<String, dynamic>> results = await db.rawQuery(sqlQuery, [pointOfDeparture, pointOfDestination, routeTime, 'AVAILABLE']);
     return results;
   }
+
+
+
 
   Future<List<Map<String, dynamic>>> getTripStops(int tripId) async{
     String sqlQuery = '''
