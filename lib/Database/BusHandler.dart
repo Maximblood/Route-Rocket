@@ -41,8 +41,13 @@ class BusHandler{
   Future<int> delete(int id) async{
     return await db.delete(tableName, where: '$columnBusID = ?', whereArgs: [id]);
   }
-  Future<int> update(Bus bus) async{
-    return await db.update(tableName, bus.toMap(), where: '$columnBusID = ?', whereArgs: [bus.id]);
+  Future<int> updateBus(int busId, int seats) async {
+    return await db.update(
+      tableName,
+      {columnCountPlaces: seats},
+      where: '$columnBusID = ?',
+      whereArgs: [busId],
+    );
   }
   Future<List<Bus>> getAllBuses() async{
     List<Map<String, dynamic>> maps = await db.query(tableName);
@@ -52,6 +57,40 @@ class BusHandler{
     }
     return buses;
   }
+
+  Future<int> getBusId(String number) async{
+    List<Map<String, Object?>> result = await db.query(tableName,
+        columns: [columnBusID],
+        where: '$columnBusNumber = ?',
+        whereArgs: [number]);
+
+    if (result.isNotEmpty) {
+      return result.first[columnBusID] as int;
+    } else {
+      return 0;
+    }
+  }
+
+  Future<int> getBusCount(int BusId) async {
+    List<Map<String, dynamic>> result = await db.rawQuery(
+      'SELECT COUNT(TRIP.TRIPID) FROM $tableName inner join TRIP ON  TRIP.BUSID = BUS.BUSID WHERE TRIP.BUSID = ?',
+      [BusId],
+    );
+    int count = Sqflite.firstIntValue(result) ?? 0;
+    return count;
+  }
+
+
+  Future<int> getBusCountById(String number) async {
+    List<Map<String, dynamic>> result = await db.rawQuery(
+      'SELECT COUNT(BUS.BUSID) FROM $tableName WHERE BUS.$columnBusNumber = ?',
+      [number],
+    );
+    int count = Sqflite.firstIntValue(result) ?? 0;
+    return count;
+  }
+
+
 
   Future close() async => db.close();
 }

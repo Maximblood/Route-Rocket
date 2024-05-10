@@ -20,6 +20,7 @@ import 'package:kursovoy/Models/City.dart';
 import 'package:kursovoy/Models/Client.dart';
 import 'package:kursovoy/Models/Role.dart';
 import 'package:kursovoy/Models/Trip.dart';
+import 'package:kursovoy/Pages/bus_admin_page.dart';
 import 'package:kursovoy/Pages/city_admin_page.dart';
 import 'package:kursovoy/Pages/driver_page.dart';
 import 'package:kursovoy/Pages/route_admin_page.dart';
@@ -1160,7 +1161,7 @@ class _AuthPageState extends State<AuthPage> {
                             child: Text(
                               role == 'admin' ? 'Функции администратора' : (role == 'driver' ? 'Функции водителя' : ''),
                               textAlign: TextAlign.center,
-                              style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500, fontSize: 16),
+                              style: TextStyle(color: Colors.black, fontWeight: FontWeight.w400, fontSize: 16),
                             ),
                           ),
                         ),
@@ -1332,7 +1333,12 @@ class _AuthPageState extends State<AuthPage> {
                   children: [
                     GestureDetector(
                       onTap: () {
-
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => BusAdminPage(databaseNotifier: Provider.of<DatabaseNotifier>(
+                              context,
+                              listen: false))),
+                        );
 
                       },
                       child: Container(

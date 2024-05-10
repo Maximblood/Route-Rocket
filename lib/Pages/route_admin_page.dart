@@ -4,12 +4,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:kursovoy/Database/BusHandler.dart';
 import 'package:kursovoy/Database/BusStopHandler.dart';
 import 'package:kursovoy/Database/CityHandler.dart';
 import 'package:kursovoy/Database/DatabaseNotifier.dart';
 import 'package:kursovoy/Database/RouteHandler.dart';
-import 'package:kursovoy/Database/TicketHandler.dart';
 import 'package:kursovoy/Models/BusStop.dart';
 import 'package:kursovoy/Models/City.dart';
 import 'package:kursovoy/Models/Route.dart' as Rroute;
@@ -56,19 +54,12 @@ class _RouteAdminPageState extends State<RouteAdminPage> {
   TextEditingController _idDepartureDeleteController = TextEditingController();
   TextEditingController _idDeleteController = TextEditingController();
 
-
-  List<Map<String, dynamic>> _citiesFirstBusStop = [];
-  List<Map<String, dynamic>> _citiesSecondBusStop = [];
-  List<Map<String, dynamic>> _citiesThirdBusStop = [];
   List<City> _citiesDelete = [];
-  List<Route> _routesSearch = [];
   List<Map<String, dynamic>> _cities = [];
   bool _showList = false;
   bool _firstFlag = false;
   bool _secondFlag = false;
   bool _thirdFlag = false;
-
-  TextEditingController _controller = TextEditingController();
 
 
   bool _showListFirstBusStop = false;
@@ -144,8 +135,6 @@ class _RouteAdminPageState extends State<RouteAdminPage> {
     bool isValid = regExp.hasMatch(_timeController.text);
     bool isValid1 = regExp1.hasMatch(_timeController.text);
 
-    print(isValid);
-    print(isValid1);
 
     if(_idDestinationController.text == '' || _idDepartureController.text == ''){
       _showDialog('Выберите город отправления и город прибытия', "Ошибка");
@@ -1604,19 +1593,9 @@ class _RouteAdminPageState extends State<RouteAdminPage> {
                   ),
                 ),
               ),
-
-
-
           ],
         ),
       ),
     );
   }
 }
-
-
-
-
-
-
-
