@@ -30,6 +30,21 @@ class RoleHandler{
     }
     return null;
   }
+
+  Future<int> getRoleId(String role) async {
+    List<Map> maps = await db.query(tableName,
+        columns: [columnRoleID],
+        where: '$columnRoleName = ?',
+        whereArgs: [role]);
+    if (maps.isNotEmpty) {
+      return maps.first[columnRoleID];
+    }
+    return 0;
+  }
+
+
+
+
   Future<int> delete(int id) async{
     return await db.delete(tableName, where: '$columnRoleID = ?', whereArgs: [id]);
   }
@@ -41,6 +56,19 @@ class RoleHandler{
     List<Role> roles = [];
     for(var map in maps){
       roles.add(Role.fromMap(map));
+    }
+    return roles;
+  }
+
+
+  Future<List<Role>> getAllRolesWithoutAdmin() async {
+    List<Map<String, dynamic>> maps = await db.query(tableName);
+    List<Role> roles = [];
+    for (var map in maps) {
+      Role role = Role.fromMap(map);
+      if (role.roleName.toLowerCase() != 'admin') {
+        roles.add(role);
+      }
     }
     return roles;
   }

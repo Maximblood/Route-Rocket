@@ -98,6 +98,17 @@ class ClientHandler{
   Future<int> update(Client client, int id) async{
     return await db.update(tableName, client.toMap(), where: '$columnUserId = ?', whereArgs: [id]);
   }
+
+  Future<void> updateRoleId(int userId, int newRoleId) async {
+    await db.update(
+      tableName,
+      {columnRoleId: newRoleId},
+      where: '$columnUserId = ?',
+      whereArgs: [userId],
+    );
+  }
+
+
   Future<List<Client>> getAllClients() async{
     List<Map<String, dynamic>> maps = await db.query(tableName, where: 'USERSTATUS = ?', whereArgs: ['REGISTERED']);
     List<Client> clients = [];
@@ -116,6 +127,28 @@ class ClientHandler{
     }
     return clients;
   }
+
+  Future<int> getDriverCountTrips(int driverID) async {
+    List<Map<String, dynamic>> result = await db.rawQuery(
+      'SELECT COUNT(TRIP.TRIPID) FROM $tableName INNER JOIN TRIP ON CLIENT.USERID = TRIP.DRIVERID WHERE $tableName.$columnUserId = ?',
+      [driverID],
+    );
+    int count = Sqflite.firstIntValue(result) ?? 0;
+    return count;
+  }
+
+
+
+  Future<List<Map<String, dynamic>>> getClientAdmin(String input) async{
+    String sqlQuery = '''
+    SELECT * FROM $tableName inner join ROLE ON $tableName.$columnRoleId = ROLE.ROLEID
+    WHERE CLIENT.USERNAME LIKE ? OR CLIENT.USERLASTNAME LIKE ? OR CLIENT.TELEPHONE LIKE ?
+  ''';
+    String searchTerm = '%$input%';
+    List<Map<String, dynamic>> result = await db.rawQuery(sqlQuery, [searchTerm, searchTerm, searchTerm]);
+    return result;
+  }
+
 
   Future close() async => db.close();
 }

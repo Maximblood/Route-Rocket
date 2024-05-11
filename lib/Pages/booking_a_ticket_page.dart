@@ -380,7 +380,13 @@ class _BookingATicketPageState extends State<BookingATicketPage> {
                     items: _landings.map((trip) {
                       return DropdownMenuItem<String>(
                         value: trip,
-                        child: Text(trip),
+                        child: Container(
+                          width: 200,
+                          child: Text(
+                            trip,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
                       );
                     }).toList(),
                   ),
@@ -399,7 +405,13 @@ class _BookingATicketPageState extends State<BookingATicketPage> {
                     items: _exits.map((trip) {
                       return DropdownMenuItem<String>(
                         value: trip,
-                        child: Text(trip),
+                        child: Container(
+                          width: 200,
+                          child: Text(
+                            trip,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
                       );
                     }).toList(),
                   ),

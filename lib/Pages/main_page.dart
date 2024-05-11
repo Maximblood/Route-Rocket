@@ -172,14 +172,14 @@ class _MainPageState extends State<MainPage> {
       if(daysAdded){
         routeTime += " ";
       }
-      routeTime += '${date[5]} д';
+      routeTime += '${date[5]} ч';
       hoursAdded = true;
     }
     else if((date[5] != '0' && date[6] != '0') || (date[5] != '0' && date[6] == '0')){
       if(daysAdded){
         routeTime += " ";
       }
-      routeTime += '${date[5]}${date[6]} д';
+      routeTime += '${date[5]}${date[6]} ч';
       hoursAdded = true;
     }
     else{
@@ -192,13 +192,13 @@ class _MainPageState extends State<MainPage> {
       if(hoursAdded){
         routeTime += " ";
       }
-      routeTime += '${date[10]} д';
+      routeTime += '${date[10]} м';
     }
     else if((date[10] != '0' && date[11] != '0') || (date[10] != '0' && date[11] == '0')){
       if(hoursAdded){
         routeTime += " ";
       }
-      routeTime += '${date[10]}${date[11]} д';
+      routeTime += '${date[10]}${date[11]} м';
     }
     else{
       routeTime += '';

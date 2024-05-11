@@ -182,7 +182,7 @@ class _BusAdminPageState extends State<BusAdminPage> {
     double height = MediaQuery.of(context).size.height - 58;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Управление городами'),
+        title: Text('Управление маршрутками'),
       ),
       body: SingleChildScrollView(
         child: Column(
