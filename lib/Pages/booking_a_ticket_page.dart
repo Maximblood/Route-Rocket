@@ -150,7 +150,7 @@ class _BookingATicketPageState extends State<BookingATicketPage> {
     List<Ticket> tickets = await TicketHandler(dbHelper.db).getAllTickets();
     ticketNumber = tickets.last.id;
     print(ticketNumber);
-    _showDialog("Билет успешно заказан. ID билета: $ticketNumber");
+    _showDialog("Билет успешно заказан. ID билета: $ticketNumber", 'Успех');
   }
   Future _addTicketUnauthorizedUser(Map<String, dynamic> selected) async{
     final dbHelper = Provider.of<DatabaseNotifier>(context, listen: false).databaseHelper;
@@ -185,17 +185,17 @@ class _BookingATicketPageState extends State<BookingATicketPage> {
     List<Ticket> tickets = await TicketHandler(dbHelper.db).getAllTickets();
     ticketNumber = tickets.last.id;
     print(ticketNumber);
-    _showDialog("Билет успешно заказан. ID билета: $ticketNumber");
+    _showDialog("Билет успешно заказан. ID билета: $ticketNumber", 'Успех');
   }
 
 
 
-  void _showDialog(String message){
+  void _showDialog(String message, String result){
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Ошибка'),
+          title: Text(result),
           content: Text(message),
           actions: [
             TextButton(
@@ -474,10 +474,10 @@ class _BookingATicketPageState extends State<BookingATicketPage> {
                     setState(() {
                         if(_passengerCount != 0){
                           if(checkResult['result']){
-                            _showDialog("Вы уже заказали билет на этот рейс. ID заказанного билета: ${checkResult['ticketId']}");
+                            _showDialog("Вы уже заказали билет на этот рейс. ID заказанного билета: ${checkResult['ticketId']}", 'Ошибка');
                           }
                           else if(driverID != null && driverID == userId){
-                            _showDialog("Вы не можете забронировать место на данный рейс, т.к. являетесь водителем на данном рейсе");
+                            _showDialog("Вы не можете забронировать место на данный рейс, т.к. являетесь водителем на данном рейсе", 'Ошибка');
                           }
                           else{
                             showDialog(
@@ -508,7 +508,7 @@ class _BookingATicketPageState extends State<BookingATicketPage> {
                           }
                         }
                         else{
-                          _showDialog("Количество пассажиров не может равняться 0");
+                          _showDialog("Количество пассажиров не может равняться 0", 'Ошибка');
                         }
                     });
                   }

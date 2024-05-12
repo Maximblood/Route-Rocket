@@ -43,7 +43,12 @@ class _UserAdminPageState extends State<UserAdminPage> {
     List<Map<String, dynamic>> result = await ClientHandler(dbHelper.db).getClientAdmin(searchQuery);
     setState(() {
       _clientList = result;
-      _filteredClientList = result;
+      if(result.length > 50){
+        _filteredClientList = result.sublist(0, 50);
+      }
+      else{
+        _filteredClientList = result;
+      }
     });
   }
 
@@ -161,7 +166,6 @@ class _UserAdminPageState extends State<UserAdminPage> {
                       if(newValue != null){
                         setState(() {
                           _updateUser(newValue, _filteredClientList[index]['CLIENTID']);
-                          _filteredClientList[index]['ROLENAME'] = newValue!;
                         });
                       }
                     },

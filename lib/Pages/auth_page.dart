@@ -24,6 +24,7 @@ import 'package:kursovoy/Pages/bus_admin_page.dart';
 import 'package:kursovoy/Pages/city_admin_page.dart';
 import 'package:kursovoy/Pages/driver_page.dart';
 import 'package:kursovoy/Pages/route_admin_page.dart';
+import 'package:kursovoy/Pages/ticket_admin_page.dart';
 import 'package:kursovoy/Pages/user_admin_page.dart';
 import 'package:kursovoy/Providers/AuthProvider.dart';
 import 'package:provider/provider.dart';
@@ -502,6 +503,7 @@ class _AuthPageState extends State<AuthPage> {
                           ));
                         }
                       }
+
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
@@ -1307,7 +1309,12 @@ class _AuthPageState extends State<AuthPage> {
                     ),
                     GestureDetector(
                       onTap: () {
-
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => TicketAdminPage(databaseNotifier: Provider.of<DatabaseNotifier>(
+                              context,
+                              listen: false))),
+                        );
 
                       },
                       child: Container(

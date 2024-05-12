@@ -172,7 +172,7 @@ class _MainPageState extends State<MainPage> {
       if(daysAdded){
         routeTime += " ";
       }
-      routeTime += '${date[5]} ч';
+      routeTime += '${date[6]} ч';
       hoursAdded = true;
     }
     else if((date[5] != '0' && date[6] != '0') || (date[5] != '0' && date[6] == '0')){
@@ -571,7 +571,8 @@ class _MainPageState extends State<MainPage> {
                       child: ListView.builder(
                         physics: const NeverScrollableScrollPhysics(),
                         itemBuilder: (BuildContext context, int index) {
-                          double? dividerWith = getDividerWidth(trips[index]['ROUTE_TIME']);
+                          String date = _getDate(trips[index]['ROUTE_TIME']);
+                          double? dividerWith = getDividerWidth(date);
                           String routeTime = _getDate(trips[index]['ROUTE_TIME'].toString());
                           return ListTile(
                             contentPadding: const EdgeInsets.symmetric(horizontal: 10),
