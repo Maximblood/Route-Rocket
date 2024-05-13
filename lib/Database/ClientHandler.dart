@@ -74,6 +74,50 @@ class ClientHandler{
   }
 
 
+  Future<List<Map<String, dynamic>>> getFreeDrivers(String input, String departure_date, String destination_date, String departure_time, String destination_time) async{
+    String sqlQuery = '''
+    SELECT *
+    FROM CLIENT
+    WHERE USERID NOT IN (
+    SELECT DRIVERID
+    FROM TRIP
+    WHERE (
+        (DATETIME(departure_date) < DATETIME(?) AND DATETIME(DESTINATION_DATE) > DATETIME(?)) OR 
+        (DATETIME(departure_date) < DATETIME(?) AND DATETIME(DESTINATION_DATE) >= DATETIME(?)) OR 
+        (DATETIME(departure_date) >= DATETIME(?) AND DATETIME(DESTINATION_DATE) < DATETIME(?) AND time(destination_time) > ?) OR 
+        (DATETIME(departure_date) > DATETIME(?) AND DATETIME(DESTINATION_DATE) <= DATETIME(?)) OR 
+        (DATETIME(departure_date) < DATETIME(?) AND DATETIME(DESTINATION_DATE) > DATETIME(?) AND DATETIME(DESTINATION_DATE) <= DATETIME(?)) OR
+        (DATETIME(departure_date) = DATETIME(?) AND DATETIME(DESTINATION_DATE) = DATETIME(?) AND time(DESTINATION_TIME) BETWEEN time(?) AND time(?)) OR 
+        (DATETIME(departure_date) = DATETIME(?) AND DATETIME(DESTINATION_DATE) = DATETIME(?) AND time(departure_time) BETWEEN time(?) AND time(?)) OR
+        (DATETIME(?) = DATETIME(?) AND DATETIME(departure_date) = DATETIME(?) AND DATETIME(DESTINATION_DATE) = DATETIME(?) AND time(departure_time) < time(?) AND time(DESTINATION_TIME) >= time(?)) OR
+        (DATETIME(?) = DATETIME(?) AND DATETIME(departure_date) = DATETIME(?) AND DATETIME(DESTINATION_DATE) = DATETIME(?) AND time(departure_time) >= time(?) AND time(DESTINATION_TIME) <= time(?)) OR
+        (DATETIME(?) = DATETIME(?) AND DATETIME(departure_date) = DATETIME(?) AND DATETIME(DESTINATION_DATE) = DATETIME(?) AND time(?) >= time(departure_time) AND time(?) <= time(DESTINATION_TIME))
+      )
+    ) AND (CLIENT.USERNAME LIKE ? OR CLIENT.USERLASTNAME LIKE ?) AND CLIENT.USERROLEID = ?
+    ''';
+
+    String searchTerm = '%$input%';
+
+    List<Map<String, dynamic>> result = await db.rawQuery(sqlQuery, [
+      departure_date, departure_date,
+      departure_date, destination_date,
+      departure_date, destination_date, departure_time,
+      departure_date, destination_date,
+      departure_date, departure_date, destination_date,
+      departure_date, departure_date, departure_time, destination_time,
+      departure_date, destination_date, departure_time, destination_time,
+      departure_date, destination_date, departure_date, destination_date, departure_time, departure_time,
+      departure_date, destination_date, departure_date, destination_date, departure_time, destination_time,
+      departure_date, destination_date, departure_date, destination_date, departure_time, departure_time,
+      searchTerm, searchTerm, 1
+    ]);
+
+    return result;
+  }
+
+
+
+
 
 
 

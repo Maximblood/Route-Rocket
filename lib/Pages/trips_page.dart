@@ -273,6 +273,24 @@ class _TripsPageState extends State<TripsPage> {
                                         ),
                                         Row(
                                           mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              tickets[index]["DepartureCityName"],
+                                              style: const TextStyle(
+                                                  fontSize: 20),
+                                            ),
+
+                                            Text(
+                                              tickets[index]
+                                              ["DestinationCityName"],
+                                              style: const TextStyle(
+                                                  fontSize: 20),
+                                            ),
+                                          ],
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
                                           children: [
                                             Column(

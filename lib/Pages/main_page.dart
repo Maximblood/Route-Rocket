@@ -102,7 +102,7 @@ class _MainPageState extends State<MainPage> {
       setState(() {
         _showResult = true;
       });
-      return await TripHandler(dbHelper.db).getAllTrips(firstTextId, secondTextId, DateFormat('dd MMMM', 'ru_RU').format(pickedValue));
+      return await TripHandler(dbHelper.db).getAllTrips(firstTextId, secondTextId, DateFormat('yyyy-MM-dd').format(pickedValue));
     }
     else{
       showDialog(
@@ -132,10 +132,7 @@ class _MainPageState extends State<MainPage> {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: initialDate,
-/*
       firstDate: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day),
-*/
-      firstDate: DateTime(DateTime.april),
       lastDate: DateTime(DateTime.now().year, 12, 31),
       locale: Locale('ru', 'RU'),
     );
@@ -349,7 +346,16 @@ class _MainPageState extends State<MainPage> {
                             }
                             else {
                               return ListTile(
-                                title: Text(formattedDate),
+                                title: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(formattedDate),
+                                    Icon(
+                                      Icons.calendar_today,
+                                      color: Colors.blue,
+                                    ),
+                                  ],
+                                ),
                                 onTap: () {
                                   if (index == 2) {
                                     _selectDate(context);

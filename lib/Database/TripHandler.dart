@@ -55,8 +55,20 @@ class TripHandler{
   Future<int> delete(int id) async{
     return await db.delete(tableName, where: '$columnTripId = ?', whereArgs: [id]);
   }
-  Future<int> update(Trip trip) async{
-    return await db.update(tableName, trip.toMap(), where: '$columnTripId = ?', whereArgs: [trip.id]);
+
+
+  Future<int> update(int tripId, int driverId, int busId, int places, double cost) async {
+    return await db.update(
+      tableName,
+      {
+        'DRIVERID': driverId,
+        'BUSID': busId,
+        'COUNT_FREE_PLACES': places,
+        'COST': cost,
+      },
+      where: '$columnTripId = ?',
+      whereArgs: [tripId],
+    );
   }
 
   Future<void> updateTripStatus(int tripId, String newStatus) async {
@@ -87,6 +99,24 @@ class TripHandler{
   ''';
 
     List<Map<String, dynamic>> results = await db.rawQuery(sqlQuery, [pointOfDeparture, pointOfDestination, routeTime, 'AVAILABLE']);
+    return results;
+  }
+
+
+  Future<List<Map<String, dynamic>>> getAllTripsUpdate(String input) async{
+    String sqlQuery = '''
+    SELECT $tableName.$columnTripId, ROUTE.$columnRouteId ,$tableName.$columnDepartureDate, $tableName.$columnDestinationDate, $tableName.$columnDepartureTime, $tableName.$columnDestinationTime, $tableName.$columnCost, $tableName.$columnCountFreePlaces, ROUTE_TIME, CITY_DEPARTURE.CITYNAME as DepartureCityName,
+      CITY_DESTINATION.CITYNAME as DestinationCityName, CLIENT.USERNAME, CLIENT.USERLASTNAME, BUS.BUSBRAND, BUS.BUSNUMBER, BUS.BUSID, CLIENT.USERID, $tableName.$columnStatus
+    FROM $tableName
+    INNER JOIN ROUTE ON ROUTE.$columnRouteId = $tableName.$columnRouteId
+    INNER JOIN CITY as CITY_DEPARTURE ON ROUTE.POINT_OF_DEPARTUREID = CITY_DEPARTURE.CITYNAMEID
+    INNER JOIN CITY as CITY_DESTINATION ON ROUTE.POINT_OF_DESTINATIONID = CITY_DESTINATION.CITYNAMEID
+    INNER JOIN BUS ON TRIP.BUSID = BUS.BUSID
+    INNER JOIN CLIENT ON CLIENT.USERID = TRIP.DRIVERID
+    WHERE $tableName.$columnStatus = ? AND (DestinationCityName LIKE ? OR DepartureCityName LIKE ?) AND TRIP.$columnTripId NOT IN (SELECT TRIPID FROM Ticket)
+  ''';
+    String search = '%$input%';
+    List<Map<String, dynamic>> results = await db.rawQuery(sqlQuery, ['AVAILABLE', search, search]);
     return results;
   }
 

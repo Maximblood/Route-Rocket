@@ -46,7 +46,7 @@ class _BusAdminPageState extends State<BusAdminPage> {
         _showDialog('Введите корректное кол-во мест', 'Ошибка');
       }
       else{
-        if(_brandController.text[0] == ' ' || _brandController.text.length < 4){
+        if(_brandController.text[0] == ' ' || _brandController.text.length < 3){
           _showDialog('Введите корректную модель', 'Ошибка');
         }
         else{

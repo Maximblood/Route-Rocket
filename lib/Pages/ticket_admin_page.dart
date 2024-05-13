@@ -92,6 +92,65 @@ class _TicketAdminPageState extends State<TicketAdminPage> {
   }
 
 
+  String _getDate(String date){
+    String routeTime = '';
+    bool daysAdded = false;
+    bool hoursAdded = false;
+
+
+    if(date[0] == '0' && date[1] != '0'){
+      routeTime += '${date[1]} д';
+      daysAdded = true;
+    }
+    else if((date[0] != '0' && date[1] != '0') || (date[0] != '0' && date[1] == '0')){
+      routeTime += '${date[0]}${date[1]} д';
+      daysAdded = true;
+    }
+    else{
+      routeTime += '';
+      daysAdded = false;
+    }
+
+    if(date[5] == '0' && date[6] != '0'){
+      if(daysAdded){
+        routeTime += " ";
+      }
+      routeTime += '${date[6]} ч';
+      hoursAdded = true;
+    }
+    else if((date[5] != '0' && date[6] != '0') || (date[5] != '0' && date[6] == '0')){
+      if(daysAdded){
+        routeTime += " ";
+      }
+      routeTime += '${date[5]}${date[6]} ч';
+      hoursAdded = true;
+    }
+    else{
+      routeTime += '';
+      hoursAdded = false;
+    }
+
+
+    if(date[10] == '0' && date[11] != '0'){
+      if(hoursAdded){
+        routeTime += " ";
+      }
+      routeTime += '${date[10]} м';
+    }
+    else if((date[10] != '0' && date[11] != '0') || (date[10] != '0' && date[11] == '0')){
+      if(hoursAdded){
+        routeTime += " ";
+      }
+      routeTime += '${date[10]}${date[11]} м';
+    }
+    else{
+      routeTime += '';
+    }
+
+    return routeTime;
+  }
+
+
 
 
 
@@ -123,7 +182,7 @@ class _TicketAdminPageState extends State<TicketAdminPage> {
     double height = MediaQuery.of(context).size.height - 58;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Управление пользователями'),
+        title: Text('Управление билетами'),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -205,7 +264,7 @@ class _TicketAdminPageState extends State<TicketAdminPage> {
                     itemCount: _filteredTicketsList.length,
                     itemBuilder: (context, index) {
                       double? dividerWith =
-                      getDividerWidth(_filteredTicketsList[index]['ROUTE_TIME']);
+                      getDividerWidth(_getDate(_filteredTicketsList[index]['ROUTE_TIME']));
                       return GestureDetector(
                         onTap: () async{
                           Navigator.push(
@@ -322,8 +381,9 @@ class _TicketAdminPageState extends State<TicketAdminPage> {
                                                 ),
                                               ),
                                             ),
-                                            Text(_filteredTicketsList[index]
-                                            ["ROUTE_TIME"]),
+                                            Text(
+                                              _getDate(_filteredTicketsList[index]
+                                            ["ROUTE_TIME"])),
                                             Padding(
                                               padding:
                                               const EdgeInsets.fromLTRB(
@@ -344,6 +404,24 @@ class _TicketAdminPageState extends State<TicketAdminPage> {
                                           style: const TextStyle(
                                               fontSize: 30,
                                               fontWeight: FontWeight.w600),
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          _filteredTicketsList[index]["DepartureCityName"],
+                                          style: const TextStyle(
+                                              fontSize: 20),
+                                        ),
+
+                                        Text(
+                                          _filteredTicketsList[index]
+                                          ["DestinationCityName"],
+                                          style: const TextStyle(
+                                              fontSize: 20),
                                         ),
                                       ],
                                     ),

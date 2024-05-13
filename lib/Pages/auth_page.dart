@@ -25,6 +25,7 @@ import 'package:kursovoy/Pages/city_admin_page.dart';
 import 'package:kursovoy/Pages/driver_page.dart';
 import 'package:kursovoy/Pages/route_admin_page.dart';
 import 'package:kursovoy/Pages/ticket_admin_page.dart';
+import 'package:kursovoy/Pages/trip_admin_page.dart';
 import 'package:kursovoy/Pages/user_admin_page.dart';
 import 'package:kursovoy/Providers/AuthProvider.dart';
 import 'package:provider/provider.dart';
@@ -1289,7 +1290,12 @@ class _AuthPageState extends State<AuthPage> {
                     GestureDetector(
                       onTap: () {
 
-
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => TripAdminPage(databaseNotifier: Provider.of<DatabaseNotifier>(
+                              context,
+                              listen: false))),
+                        );
                       },
                       child: Container(
                         width: 190,

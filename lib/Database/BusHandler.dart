@@ -91,6 +91,95 @@ class BusHandler{
   }
 
 
+  Future<List<Map<String, dynamic>>> getFreeBuses(String input, String departure_date, String destination_date, String departure_time, String destination_time) async{
+    String sqlQuery = '''
+    SELECT *
+    FROM BUS
+    WHERE BUSID NOT IN (
+    SELECT BUSID
+    FROM TRIP
+    WHERE (
+        (DATETIME(departure_date) < DATETIME(?) AND DATETIME(DESTINATION_DATE) > DATETIME(?)) OR 
+        (DATETIME(departure_date) < DATETIME(?) AND DATETIME(DESTINATION_DATE) >= DATETIME(?)) OR 
+        (DATETIME(departure_date) >= DATETIME(?) AND DATETIME(DESTINATION_DATE) < DATETIME(?) AND time(destination_time) > ?) OR 
+        (DATETIME(departure_date) > DATETIME(?) AND DATETIME(DESTINATION_DATE) <= DATETIME(?)) OR 
+        (DATETIME(departure_date) < DATETIME(?) AND DATETIME(DESTINATION_DATE) > DATETIME(?) AND DATETIME(DESTINATION_DATE) <= DATETIME(?)) OR
+        (DATETIME(departure_date) = DATETIME(?) AND DATETIME(DESTINATION_DATE) = DATETIME(?) AND time(DESTINATION_TIME) BETWEEN time(?) AND time(?)) OR 
+        (DATETIME(departure_date) = DATETIME(?) AND DATETIME(DESTINATION_DATE) = DATETIME(?) AND time(departure_time) BETWEEN time(?) AND time(?)) OR
+        (DATETIME(?) = DATETIME(?) AND DATETIME(departure_date) = DATETIME(?) AND DATETIME(DESTINATION_DATE) = DATETIME(?) AND time(departure_time) < time(?) AND time(DESTINATION_TIME) >= time(?)) OR
+        (DATETIME(?) = DATETIME(?) AND DATETIME(departure_date) = DATETIME(?) AND DATETIME(DESTINATION_DATE) = DATETIME(?) AND time(departure_time) >= time(?) AND time(DESTINATION_TIME) <= time(?)) OR
+        (DATETIME(?) = DATETIME(?) AND DATETIME(departure_date) = DATETIME(?) AND DATETIME(DESTINATION_DATE) = DATETIME(?) AND time(?) >= time(departure_time) AND time(?) <= time(DESTINATION_TIME))
+      )
+    ) AND (BUS.BUSBRAND LIKE ? OR BUS.BUSNUMBER LIKE ?)
+    ''';
+
+    String searchTerm = '%$input%';
+
+    List<Map<String, dynamic>> result = await db.rawQuery(sqlQuery, [
+      departure_date, departure_date,
+      departure_date, destination_date,
+      departure_date, destination_date, departure_time,
+      departure_date, destination_date,
+      departure_date, departure_date, destination_date,
+      departure_date, departure_date, departure_time, destination_time,
+      departure_date, destination_date, departure_time, destination_time,
+      departure_date, destination_date, departure_date, destination_date, departure_time, departure_time,
+      departure_date, destination_date, departure_date, destination_date, departure_time, destination_time,
+      departure_date, destination_date, departure_date, destination_date, departure_time, departure_time,
+      searchTerm, searchTerm
+    ]);
+
+    return result;
+  }
+
+
+
+
+  Future<List<Map<String, dynamic>>> getFreeBusesUpdate(String input, String departure_date, String destination_date, String departure_time, String destination_time) async{
+    String sqlQuery = '''
+    SELECT *
+    FROM BUS
+    WHERE BUSID NOT IN (
+    SELECT BUSID
+    FROM TRIP
+    WHERE (
+        (DATETIME(departure_date) < DATETIME(?) AND DATETIME(DESTINATION_DATE) > DATETIME(?)) OR 
+        (DATETIME(departure_date) < DATETIME(?) AND DATETIME(DESTINATION_DATE) >= DATETIME(?)) OR 
+        (DATETIME(departure_date) >= DATETIME(?) AND DATETIME(DESTINATION_DATE) < DATETIME(?) AND time(destination_time) > ?) OR 
+        (DATETIME(departure_date) > DATETIME(?) AND DATETIME(DESTINATION_DATE) <= DATETIME(?)) OR 
+        (DATETIME(departure_date) < DATETIME(?) AND DATETIME(DESTINATION_DATE) > DATETIME(?) AND DATETIME(DESTINATION_DATE) <= DATETIME(?)) OR
+        (DATETIME(departure_date) = DATETIME(?) AND DATETIME(DESTINATION_DATE) = DATETIME(?) AND time(DESTINATION_TIME) BETWEEN time(?) AND time(?)) OR 
+        (DATETIME(departure_date) = DATETIME(?) AND DATETIME(DESTINATION_DATE) = DATETIME(?) AND time(departure_time) BETWEEN time(?) AND time(?)) OR
+        (DATETIME(?) = DATETIME(?) AND DATETIME(departure_date) = DATETIME(?) AND DATETIME(DESTINATION_DATE) = DATETIME(?) AND time(departure_time) < time(?) AND time(DESTINATION_TIME) >= time(?)) OR
+        (DATETIME(?) = DATETIME(?) AND DATETIME(departure_date) = DATETIME(?) AND DATETIME(DESTINATION_DATE) = DATETIME(?) AND time(departure_time) >= time(?) AND time(DESTINATION_TIME) <= time(?)) OR
+        (DATETIME(?) = DATETIME(?) AND DATETIME(departure_date) = DATETIME(?) AND DATETIME(DESTINATION_DATE) = DATETIME(?) AND time(?) >= time(departure_time) AND time(?) <= time(DESTINATION_TIME))
+      )
+    ) AND (BUS.BUSBRAND LIKE ? OR BUS.BUSNUMBER LIKE ?)
+    ''';
+
+    String searchTerm = '%$input%';
+
+    List<Map<String, dynamic>> result = await db.rawQuery(sqlQuery, [
+      departure_date, departure_date,
+      departure_date, destination_date,
+      departure_date, destination_date, departure_time,
+      departure_date, destination_date,
+      departure_date, departure_date, destination_date,
+      departure_date, departure_date, departure_time, destination_time,
+      departure_date, destination_date, departure_time, destination_time,
+      departure_date, destination_date, departure_date, destination_date, departure_time, departure_time,
+      departure_date, destination_date, departure_date, destination_date, departure_time, destination_time,
+      departure_date, destination_date, departure_date, destination_date, departure_time, departure_time,
+      searchTerm, searchTerm
+    ]);
+
+    return result;
+  }
+
+
+
+
+
 
   Future close() async => db.close();
 }

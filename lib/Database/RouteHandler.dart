@@ -39,6 +39,25 @@ class RouteHandler{
     return null;
   }
 
+
+  Future<List<Map<String, dynamic>>> getRouteWithFilter(String input) async{
+    String sqlQuery = '''
+    SELECT 
+    ROUTEID,
+    CITY_DEPARTURE.CITYNAME as POINTOFDEPARTURE,
+    CITY_DESTINATION.CITYNAME as POINTOFDESTINATION,
+    ROUTE_TIME
+    FROM ROUTE
+    INNER JOIN CITY as CITY_DEPARTURE ON ROUTE.POINT_OF_DEPARTUREID = CITY_DEPARTURE.CITYNAMEID
+    INNER JOIN CITY as CITY_DESTINATION ON ROUTE.POINT_OF_DESTINATIONID = CITY_DESTINATION.CITYNAMEID
+    WHERE $tableName.$columnRouteId LIKE ? OR CITY_DEPARTURE.CITYNAME LIKE ? OR CITY_DESTINATION.CITYNAME LIKE ?
+    ''';
+    String searchTerm = '%$input%';
+    List<Map<String, dynamic>> results = await db.rawQuery(sqlQuery, [searchTerm, searchTerm, searchTerm]);
+    return results;
+  }
+
+
   Future<int> getRouteId(Route route) async {
     List<Map> maps = await db.query(tableName,
         columns: [columnRouteId],
