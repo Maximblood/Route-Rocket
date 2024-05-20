@@ -8,9 +8,10 @@ import 'package:kursovoy/Pages/auth_page.dart';
 import 'package:kursovoy/Pages/main_page.dart';
 import 'package:kursovoy/Pages/trips_page.dart';
 import 'package:kursovoy/Providers/AuthProvider.dart';
+import 'package:kursovoy/Providers/UpdateProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import '../Database/DatabaseNotifier.dart';
+import 'Database/DatabaseNotifier.dart';
 
 
 
@@ -25,10 +26,12 @@ void main() async{
       ChangeNotifierProvider<DatabaseNotifier>(
         create: (context) => DatabaseNotifier(),
       ),
+      ChangeNotifierProvider<UpdateProvider>(
+        create: (context) => UpdateProvider(),
+      ),
       ChangeNotifierProvider<AuthProvider>(
         create: (context) => AuthProvider(),
       ),
-
     ],
     child: MyApp(),
   ),
@@ -85,12 +88,16 @@ class _MyHomePageState extends State<MyHomePage> {
   String formattedDate = '';
   final UserSharedHandler _userSharedHandler = UserSharedHandler("user_data");
   bool _showProfile = false;
+  List<Widget> _children = [];
 
 
   void _onTabTapped(int index) {
     setState(() {
       _currentIndex = index;
     });
+    if (_currentIndex == 0) {
+      Provider.of<UpdateProvider>(context, listen: false).updateState = true;
+    }
   }
 
   Future<void> _updateShowProfile(BuildContext context) async {
@@ -118,7 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     final databaseNotifier = Provider.of<DatabaseNotifier>(context);
 
-    final List<Widget> _children = [
+    _children = [
       MainPage(databaseNotifier: databaseNotifier),
       TripsPage(databaseNotifier: databaseNotifier),
       AuthPage(databaseNotifier: databaseNotifier),

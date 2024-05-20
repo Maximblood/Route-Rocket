@@ -174,7 +174,7 @@ class TicketHandler{
     INNER JOIN CITY as CITY_DESTINATION ON ROUTE.POINT_OF_DESTINATIONID = CITY_DESTINATION.CITYNAMEID
     WHERE (CLIENT.USERNAME LIKE ? OR CLIENT.USERLASTNAME LIKE ? OR CLIENT.TELEPHONE LIKE ? OR $tableName.$columnTicketId LIKE ?) AND TRIP.STATUS = ?
     ''';
-    String searchTerm = '%$input%';
+      String searchTerm = '%$input%';
     List<Map<String, dynamic>> results = await db.rawQuery(sqlQuery, [searchTerm, searchTerm, searchTerm, searchTerm, 'AVAILABLE']);
 
     return results;

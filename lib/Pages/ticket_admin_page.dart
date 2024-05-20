@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:kursovoy/Database/BusStopHandler.dart';
 import 'package:kursovoy/Database/CityHandler.dart';
 import 'package:kursovoy/Database/ClientHandler.dart';
@@ -151,6 +152,13 @@ class _TicketAdminPageState extends State<TicketAdminPage> {
   }
 
 
+  String getDate(String unformattedDate){
+    DateTime date = DateTime.parse(unformattedDate);
+
+    String formattedDate = DateFormat('dd MMMM', 'ru').format(date); // 'ru' указывает, что мы хотим использовать русский язык для месяца
+
+    return formattedDate;
+  }
 
 
 
@@ -345,13 +353,13 @@ class _TicketAdminPageState extends State<TicketAdminPage> {
                                       MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
-                                          _filteredTicketsList[index]["DEPARTURE_DATE"],
+                                          getDate(_filteredTicketsList[index]["DEPARTURE_DATE"]),
                                           style: const TextStyle(
                                               fontWeight: FontWeight.w500),
                                         ),
                                         Text(
-                                          _filteredTicketsList[index]
-                                          ["DESTINATION_DATE"],
+                                          getDate(_filteredTicketsList[index]
+                                          ["DESTINATION_DATE"]),
                                           style: const TextStyle(
                                               fontWeight: FontWeight.w500),
                                         ),
@@ -362,6 +370,7 @@ class _TicketAdminPageState extends State<TicketAdminPage> {
                                       MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
+
                                           _filteredTicketsList[index]["DEPARTURE_TIME"],
                                           style: const TextStyle(
                                               fontSize: 30,

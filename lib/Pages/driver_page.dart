@@ -135,18 +135,30 @@ class _DriverPageState extends State<DriverPage> {
                                               fontSize: 16,
                                             ),
                                           ),
-                                          Text(
-                                            "Место посадки: ${passengers[index]["LandingFromCityName"]}",
-                                            style: const TextStyle(
-                                              fontSize: 16,
+                                          Container(
+                                            width: 200,
+                                            child:
+                                            Text(
+                                              "Место посадки: ${passengers[index]["LandingFromCityName"]}",
+                                              style: const TextStyle(
+                                                fontSize: 16,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 1,
                                             ),
                                           ),
-                                          Text(
-                                            "Место выхода: ${passengers[index]["LandingToCityName"]}",
-                                            style: const TextStyle(
-                                              fontSize: 16,
+                                          Container(
+                                            width: 200,
+                                            child: Text(
+                                              "Место выхода: ${passengers[index]["LandingToCityName"]}",
+                                              style: const TextStyle(
+                                                fontSize: 16,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 1,
                                             ),
-                                          ),
+                                          )
+
                                         ],
                                       ),
                                       Visibility(

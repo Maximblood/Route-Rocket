@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -21,18 +22,19 @@ import 'package:kursovoy/Models/Ticket.dart';
 import 'package:kursovoy/Models/Trip.dart';
 import 'package:kursovoy/Pages/booking_a_ticket_page.dart';
 import 'package:kursovoy/Pages/city_search_page.dart';
+import 'package:kursovoy/Providers/UpdateProvider.dart';
 import 'package:provider/provider.dart';
 
 class MainPage extends StatefulWidget {
   final DatabaseNotifier databaseNotifier;
-
-  MainPage({required this.databaseNotifier});
+  MainPage({Key? key, required this.databaseNotifier}): super(key: key);
 
   @override
-  _MainPageState createState() => _MainPageState();
+  MainPageState createState() => MainPageState();
+
 }
 
-class _MainPageState extends State<MainPage> {
+class MainPageState extends State<MainPage> with WidgetsBindingObserver{
   late DatabaseNotifier _databaseNotifier;
   late Future<List<Map<String, dynamic>>> _tripFuture;
   String firstText = 'Откуда';
@@ -43,10 +45,14 @@ class _MainPageState extends State<MainPage> {
   String _textFromField2 = '';
   int _textFromFieldID1 = 0;
   int _textFromFieldID2 = 0;
+  bool contentUpdated = false;
+  bool isPressed = false;
   Future<void> _initFuture = initializeDateFormatting('ru_RU', null);
   String formattedDate = DateFormat('dd MMMM yyyy (EEEE)', 'ru_RU').format(
       DateTime.now());
   bool _showResult = false;
+  bool _didInitState = false;
+
   DateTime pickedValue = DateTime.now();
   void swapText() {
     setState(() {
@@ -64,6 +70,36 @@ class _MainPageState extends State<MainPage> {
     });
 
   }
+
+
+  @override
+  void didUpdateWidget(covariant MainPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    bool updateState = Provider.of<UpdateProvider>(context, listen: false).updateState;
+    if(updateState){
+      if((firstText != 'Откуда' && firstText != 'Куда') && (secondText != 'Куда' && secondText != 'Откуда') && isPressed){
+        setState(() {
+          _tripFuture = _searchTrips();
+        });
+      }
+      Provider.of<UpdateProvider>(context, listen: false).updateBoolean(false);
+    }
+
+  }
+
+
+
+
+
+
+  String getDate(String unformattedDate){
+    DateTime date = DateTime.parse(unformattedDate);
+
+    String formattedDate = DateFormat('dd MMMM', 'ru').format(date); // 'ru' указывает, что мы хотим использовать русский язык для месяца
+
+    return formattedDate;
+  }
+
   double? getDividerWidth(String result) {
     switch (result.length) {
       case 3:
@@ -94,6 +130,7 @@ class _MainPageState extends State<MainPage> {
     super.initState();
     _initFuture = initializeDateFormatting('ru_RU', null);
     _databaseNotifier = widget.databaseNotifier;
+    _didInitState = true;
   }
   Future<List<Map<String, dynamic>>> _searchTrips() async {
     final dbHelper = Provider.of<DatabaseNotifier>(context, listen: false).databaseHelper;
@@ -272,6 +309,11 @@ class _MainPageState extends State<MainPage> {
         .size
         .width;
 
+
+    setState(() {
+
+    });
+
     return Scaffold(
       body: SafeArea(
         child: AnimatedSwitcher(
@@ -286,138 +328,168 @@ class _MainPageState extends State<MainPage> {
 
   Widget _buildSearchPage(double height, double width) {
     return Container(
+      height: height,
+      width: width,
       decoration: const BoxDecoration(
         image: DecorationImage(
           image: AssetImage('assets/images/doroga.jpg'),
           fit: BoxFit.cover,
         ),
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: <Widget>[
-          Stack(
-            children: [
-              SizedBox(
-                height: height * 0.34,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
+      child:
+      Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Container(
+            height: 0.5 * height,
+            width: width,
+            child: Stack(
+
+              children: [
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  child: Image.asset(
+                    'assets/icons/logo1.png',
+                    width: 450,
+                    height: 250,
                   ),
-                  margin: const EdgeInsets.fromLTRB(10, 0, 10, 35),
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: ListView.separated(
-                          separatorBuilder: (BuildContext context, int index) =>
-                          const Divider(
-                            indent: 15,
-                            endIndent: 15,
-                            color: Colors.grey,
-                            height: 0.05,
-                          ),
-                          padding: const EdgeInsets.all(5),
-                          shrinkWrap: true,
-                          itemCount: 3,
-                          itemBuilder: (BuildContext context, int index) {
-                            if (index == 3) {
-                              return const Divider(color: Colors.grey,
-                                height: 0.05,);
-                            }
-                            if (index < 2) {
-                              return Row(
-                                children: [
-                                  Expanded(child: ListTile(
-                                    title: Text(index == 0 ? firstText : index == 1
-                                        ? secondText
-                                        : formattedDate),
+                ),
+              ],
+            ),
+          ),
+
+          Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+
+              Stack(
+                children: [
+                  SizedBox(
+                    height: height * 0.34,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      margin: const EdgeInsets.fromLTRB(10, 0, 10, 35),
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: ListView.separated(
+                              separatorBuilder: (BuildContext context, int index) =>
+                              const Divider(
+                                indent: 15,
+                                endIndent: 15,
+                                color: Colors.grey,
+                                height: 0.05,
+                              ),
+                              padding: const EdgeInsets.all(5),
+                              shrinkWrap: true,
+                              itemCount: 3,
+                              itemBuilder: (BuildContext context, int index) {
+                                if (index == 3) {
+                                  return const Divider(color: Colors.grey,
+                                    height: 0.05,);
+                                }
+                                if (index < 2) {
+                                  return Row(
+                                    children: [
+                                      Expanded(child: ListTile(
+                                        title: Text(index == 0 ? firstText : index == 1
+                                            ? secondText
+                                            : formattedDate),
+                                        onTap: () {
+                                          if (index == 0) {
+                                            _openCitySearchPage('first');
+                                          } else if (index == 1) {
+                                            _openCitySearchPage('second');
+                                          } else {
+                                            _selectDate(context);
+                                          }
+                                        },
+                                      )),
+                                    ],
+                                  );
+                                }
+                                else {
+                                  return ListTile(
+                                    title: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(formattedDate),
+                                        Icon(
+                                          Icons.calendar_today,
+                                          color: Colors.blue,
+                                        ),
+                                      ],
+                                    ),
                                     onTap: () {
-                                      if (index == 0) {
-                                        _openCitySearchPage('first');
-                                      } else if (index == 1) {
-                                        _openCitySearchPage('second');
-                                      } else {
+                                      if (index == 2) {
                                         _selectDate(context);
                                       }
                                     },
-                                  )),
-                                ],
-                              );
-                            }
-                            else {
-                              return ListTile(
-                                title: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(formattedDate),
-                                    Icon(
-                                      Icons.calendar_today,
-                                      color: Colors.blue,
-                                    ),
-                                  ],
-                                ),
-                                onTap: () {
-                                  if (index == 2) {
-                                    _selectDate(context);
-                                  }
-                                },
-                              );
-                            }
-                          },
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
-                        child: ElevatedButton(
-                          style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all(
-                                  Colors.orange),
-                              minimumSize: MaterialStateProperty.all(
-                                  Size(width, 50)),
-                              shape: MaterialStateProperty.all<
-                                  RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(7),
-                                  )
-                              )
+                                  );
+                                }
+                              },
+                            ),
                           ),
-                          onPressed: () async{
-                            setState(() {
-                              _tripFuture = _searchTrips();
-                            });
-                          },
-                          child: const Text('Найти билет',
-                            style: TextStyle(color: Colors.white, fontSize: 18),),
-                        ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+                            child: ElevatedButton(
+                              style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all(
+                                      Colors.orange),
+                                  minimumSize: MaterialStateProperty.all(
+                                      Size(width, 50)),
+                                  shape: MaterialStateProperty.all<
+                                      RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(7),
+                                      )
+                                  )
+                              ),
+                              onPressed: () async{
+                                setState(() {
+                                  _tripFuture = _searchTrips();
+                                  isPressed = true;
+                                });
+                              },
+                              child: const Text('Найти билет',
+                                style: TextStyle(color: Colors.white, fontSize: 19, fontWeight: FontWeight.w500),),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
-              ),
-              Positioned(
-                top: 35,
-                right: 20,
-                child: Container(
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.orange,
+                  Positioned(
+                      top: 35,
+                      right: 20,
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.orange,
+                        ),
+                        child: IconButton(
+                          onPressed: () {
+                            swapText();
+                          },
+                          icon: const Icon(Icons.swap_vert_outlined),
+                          iconSize: 30,
+                          color: Colors.white,
+                          splashRadius: 25,
+                        ),
+                      )
                   ),
-                  child: IconButton(
-                    onPressed: () {
-                      swapText();
-                    },
-                    icon: const Icon(Icons.swap_vert_outlined),
-                    iconSize: 30,
-                    color: Colors.white,
-                    splashRadius: 25,
-                  ),
-                )
-              ),
-            ],
-          )
+                ],
+              )
 
+            ],
+          ),
         ],
-      ),
+      )
+
     );
   }
 
@@ -439,7 +511,7 @@ class _MainPageState extends State<MainPage> {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      margin: const EdgeInsets.fromLTRB(10, 0, 10, 35),
+                      margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
                       child: Column(
                         children: [
                           Expanded(
@@ -485,7 +557,16 @@ class _MainPageState extends State<MainPage> {
                                 }
                                 else {
                                   return ListTile(
-                                    title: Text(formattedDate),
+                                    title: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(formattedDate),
+                                        Icon(
+                                          Icons.calendar_today,
+                                          color: Colors.blue,
+                                        ),
+                                      ],
+                                    ),
                                     onTap: () {
                                       if (index == 2) {
                                         _selectDate(context);
@@ -594,8 +675,8 @@ class _MainPageState extends State<MainPage> {
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Text(trips[index]['DEPARTURE_DATE'], style: const TextStyle(fontWeight: FontWeight.w500),),
-                                          Text(trips[index]['DESTINATION_DATE'], style: const TextStyle(fontWeight: FontWeight.w500),)
+                                          Text(getDate(trips[index]['DEPARTURE_DATE']), style: const TextStyle(fontWeight: FontWeight.w500),),
+                                          Text(getDate(trips[index]['DESTINATION_DATE']), style: const TextStyle(fontWeight: FontWeight.w500),)
                                         ],
                                       ),
                                       Row(

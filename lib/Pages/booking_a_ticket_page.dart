@@ -293,7 +293,7 @@ class _BookingATicketPageState extends State<BookingATicketPage> {
                 ),
                 enabled: _isAuthorized ? false : true,
                 inputFormatters: [
-                  FilteringTextInputFormatter.deny(RegExp(r'[^+\d]')),
+                  FilteringTextInputFormatter.deny(RegExp(r'[^\d]')),
                   _isAuthorized ? LengthLimitingTextInputFormatter(13) : LengthLimitingTextInputFormatter(9),
                 ],
                 validator: (value) {

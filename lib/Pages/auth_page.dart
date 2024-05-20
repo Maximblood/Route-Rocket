@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:kursovoy/Database/BusHandler.dart';
 import 'package:kursovoy/Database/BusStopHandler.dart';
 import 'package:kursovoy/Database/CityHandler.dart';
@@ -103,18 +104,18 @@ class _AuthPageState extends State<AuthPage> {
         count++;
       }
       if(count == clients.length){
-        _showDialog('Такого пользователя не существует');
+        _showDialog('Такого пользователя не существует', 'Ошибка');
         return;
       }
     }
   }
 
-  void _showDialog(String message){
+  void _showDialog(String message, String result){
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Ошибка'),
+          title: Text(result),
           content: Text(message),
           actions: [
             TextButton(
@@ -127,6 +128,7 @@ class _AuthPageState extends State<AuthPage> {
         );
       },
     );
+
   }
 
   double? getDividerWidth(String result) {
@@ -152,6 +154,73 @@ class _AuthPageState extends State<AuthPage> {
       default:
         return 0;
     }
+  }
+
+  String getDate(String unformattedDate){
+    DateTime date = DateTime.parse(unformattedDate);
+
+    String formattedDate = DateFormat('dd MMMM', 'ru').format(date); // 'ru' указывает, что мы хотим использовать русский язык для месяца
+
+    return formattedDate;
+  }
+
+
+  String _getDate(String date){
+    String routeTime = '';
+    bool daysAdded = false;
+    bool hoursAdded = false;
+
+
+    if(date[0] == '0' && date[1] != '0'){
+      routeTime += '${date[1]} д';
+      daysAdded = true;
+    }
+    else if((date[0] != '0' && date[1] != '0') || (date[0] != '0' && date[1] == '0')){
+      routeTime += '${date[0]}${date[1]} д';
+      daysAdded = true;
+    }
+    else{
+      routeTime += '';
+      daysAdded = false;
+    }
+
+    if(date[5] == '0' && date[6] != '0'){
+      if(daysAdded){
+        routeTime += " ";
+      }
+      routeTime += '${date[6]} ч';
+      hoursAdded = true;
+    }
+    else if((date[5] != '0' && date[6] != '0') || (date[5] != '0' && date[6] == '0')){
+      if(daysAdded){
+        routeTime += " ";
+      }
+      routeTime += '${date[5]}${date[6]} ч';
+      hoursAdded = true;
+    }
+    else{
+      routeTime += '';
+      hoursAdded = false;
+    }
+
+
+    if(date[10] == '0' && date[11] != '0'){
+      if(hoursAdded){
+        routeTime += " ";
+      }
+      routeTime += '${date[10]} м';
+    }
+    else if((date[10] != '0' && date[11] != '0') || (date[10] != '0' && date[11] == '0')){
+      if(hoursAdded){
+        routeTime += " ";
+      }
+      routeTime += '${date[10]}${date[11]} м';
+    }
+    else{
+      routeTime += '';
+    }
+
+    return routeTime;
   }
 
   Future _profileInfoUser() async{
@@ -219,7 +288,7 @@ class _AuthPageState extends State<AuthPage> {
       }
     }
     if(count > 0){
-      _showDialog("Пользователь с этим номером телефона уже существует");
+      _showDialog("Пользователь с этим номером телефона уже существует", 'Ошибка');
       return;
     }
     else{
@@ -234,6 +303,7 @@ class _AuthPageState extends State<AuthPage> {
       }
       if(countUnregistered > 0){
         await clientHandler.update(client, userId);
+        _showDialog('Вы успешно зарегистрировались', 'Успех');
         setState(() {
           _phoneNumberAuthController.text = '+375${_phoneNumberController.text}';
           _phoneNumberController.text = "";
@@ -248,6 +318,7 @@ class _AuthPageState extends State<AuthPage> {
       }
       else{
         await clientHandler.insert(client);
+        _showDialog('Вы успешно зарегистрировались', 'Успех');
         setState(() {
           _phoneNumberAuthController.text = '+375${_phoneNumberController.text}';
           _phoneNumberController.text = "";
@@ -278,7 +349,7 @@ class _AuthPageState extends State<AuthPage> {
         _newPasswordAcceptController.text = "";
         _userSharedHandler.deleteUser();
         _showPasswordResetFields = false;
-        _showDialog('Перезайдите в аккаунт');
+        _showDialog('Перезайдите в аккаунт', 'Успех');
         _showResult = 'login';
       });
     }
@@ -462,6 +533,9 @@ class _AuthPageState extends State<AuthPage> {
                       prefixIcon: Icon(Icons.phone),
                       border: OutlineInputBorder(),
                     ),
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(13),
+                    ],
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Введите номер телефона';
@@ -1457,7 +1531,7 @@ class _AuthPageState extends State<AuthPage> {
                               child: ListView.builder(
                                 itemBuilder: (BuildContext context, int index) {
                                   double? dividerWith =
-                                  getDividerWidth(trips[index]['ROUTE_TIME']);
+                                  getDividerWidth(_getDate(trips[index]['ROUTE_TIME']));
                                   return GestureDetector(
                                     onTap: () async {
                                       showDialog(
@@ -1531,12 +1605,12 @@ class _AuthPageState extends State<AuthPage> {
                                                   MainAxisAlignment.spaceBetween,
                                                   children: [
                                                     Text(
-                                                      trips[index]["DEPARTURE_DATE"],
+                                                      getDate(trips[index]["DEPARTURE_DATE"]),
                                                       style: const TextStyle(
                                                           fontWeight: FontWeight.w500),
                                                     ),
                                                     Text(
-                                                      trips[index]["DESTINATION_DATE"],
+                                                      getDate(trips[index]["DESTINATION_DATE"]),
                                                       style: const TextStyle(
                                                           fontWeight: FontWeight.w500),
                                                     ),
@@ -1567,7 +1641,7 @@ class _AuthPageState extends State<AuthPage> {
                                                           ),
                                                         ),
                                                         Text(
-                                                            trips[index]["ROUTE_TIME"]),
+                                                            _getDate(trips[index]["ROUTE_TIME"])),
                                                         Padding(
                                                           padding:
                                                           const EdgeInsets.fromLTRB(

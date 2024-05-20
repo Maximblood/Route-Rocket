@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:kursovoy/Database/DatabaseNotifier.dart';
 import 'package:kursovoy/Database/TicketHandler.dart';
 import 'package:kursovoy/Database/TripHandler.dart';
@@ -11,6 +12,7 @@ import 'package:kursovoy/Database/CityHandler.dart';
 import 'package:kursovoy/Models/Ticket.dart';
 import 'package:kursovoy/Pages/ticket_info_page.dart';
 import 'package:kursovoy/Providers/AuthProvider.dart';
+import 'package:kursovoy/Providers/UpdateProvider.dart';
 import 'package:provider/provider.dart';
 
 class TripsPage extends StatefulWidget {
@@ -29,7 +31,7 @@ class _TripsPageState extends State<TripsPage> {
   late Future<List<Map<String, dynamic>>>? _ticketsFuture;
   late Future<List<Map<String, dynamic>>>? _ticketsFutureAuth;
   late Future _authFuture;
-
+  bool isUpdateTicket = false;
   Future<List<Map<String, dynamic>>> _searchTickets(int id) async {
     final dbHelper =
         Provider.of<DatabaseNotifier>(context, listen: false).databaseHelper;
@@ -52,6 +54,72 @@ class _TripsPageState extends State<TripsPage> {
       _ticketsFutureAuth =
           TicketHandler(dbHelper.db).getTicketsByIdAuthorized(userId);
     });
+  }
+
+  String _getDate(String date){
+    String routeTime = '';
+    bool daysAdded = false;
+    bool hoursAdded = false;
+
+
+    if(date[0] == '0' && date[1] != '0'){
+      routeTime += '${date[1]} д';
+      daysAdded = true;
+    }
+    else if((date[0] != '0' && date[1] != '0') || (date[0] != '0' && date[1] == '0')){
+      routeTime += '${date[0]}${date[1]} д';
+      daysAdded = true;
+    }
+    else{
+      routeTime += '';
+      daysAdded = false;
+    }
+
+    if(date[5] == '0' && date[6] != '0'){
+      if(daysAdded){
+        routeTime += " ";
+      }
+      routeTime += '${date[6]} ч';
+      hoursAdded = true;
+    }
+    else if((date[5] != '0' && date[6] != '0') || (date[5] != '0' && date[6] == '0')){
+      if(daysAdded){
+        routeTime += " ";
+      }
+      routeTime += '${date[5]}${date[6]} ч';
+      hoursAdded = true;
+    }
+    else{
+      routeTime += '';
+      hoursAdded = false;
+    }
+
+
+    if(date[10] == '0' && date[11] != '0'){
+      if(hoursAdded){
+        routeTime += " ";
+      }
+      routeTime += '${date[10]} м';
+    }
+    else if((date[10] != '0' && date[11] != '0') || (date[10] != '0' && date[11] == '0')){
+      if(hoursAdded){
+        routeTime += " ";
+      }
+      routeTime += '${date[10]}${date[11]} м';
+    }
+    else{
+      routeTime += '';
+    }
+
+    return routeTime;
+  }
+
+  String getDate(String unformattedDate){
+    DateTime date = DateTime.parse(unformattedDate);
+
+    String formattedDate = DateFormat('dd MMMM', 'ru').format(date); // 'ru' указывает, что мы хотим использовать русский язык для месяца
+
+    return formattedDate;
   }
 
   Future<void> _deleteTicket(int id) async {
@@ -144,8 +212,14 @@ class _TripsPageState extends State<TripsPage> {
             child: FutureBuilder<List<Map<String, dynamic>>>(
               future: _ticketsFutureAuth,
               builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return CircularProgressIndicator();
+                if (snapshot.connectionState == ConnectionState.waiting){
+                  return const Stack(
+                    children: [
+                      Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    ],
+                  );
                 } else if (snapshot.hasError) {
                   return Text('Ошибка: ${snapshot.error}');
                 } else if (snapshot.hasData) {
@@ -168,8 +242,8 @@ class _TripsPageState extends State<TripsPage> {
                       padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                       child: ListView.builder(
                         itemBuilder: (BuildContext context, int index) {
-                          double? dividerWith =
-                              getDividerWidth(tickets[index]['ROUTE_TIME']);
+                          String date = _getDate(tickets[index]['ROUTE_TIME']);
+                          double? dividerWith = getDividerWidth(date);
                           return GestureDetector(
                             onTap: () {
                               Navigator.push(
@@ -210,13 +284,13 @@ class _TripsPageState extends State<TripsPage> {
                                               MainAxisAlignment.spaceBetween,
                                           children: [
                                             Text(
-                                              tickets[index]["DEPARTURE_DATE"],
+                                              getDate(tickets[index]["DEPARTURE_DATE"]),
                                               style: const TextStyle(
                                                   fontWeight: FontWeight.w500),
                                             ),
                                             Text(
-                                              tickets[index]
-                                                  ["DESTINATION_DATE"],
+                                              getDate(tickets[index]
+                                                  ["DESTINATION_DATE"]),
                                               style: const TextStyle(
                                                   fontWeight: FontWeight.w500),
                                             ),
@@ -246,8 +320,7 @@ class _TripsPageState extends State<TripsPage> {
                                                     ),
                                                   ),
                                                 ),
-                                                Text(tickets[index]
-                                                    ["ROUTE_TIME"]),
+                                                Text(date),
                                                 Padding(
                                                   padding:
                                                       const EdgeInsets.fromLTRB(
@@ -492,8 +565,8 @@ class _TripsPageState extends State<TripsPage> {
                     padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                     child: ListView.builder(
                       itemBuilder: (BuildContext context, int index) {
-                        double? dividerWith =
-                            getDividerWidth(tickets[index]['ROUTE_TIME']);
+                        String date = _getDate(tickets[index]['ROUTE_TIME']);
+                        double? dividerWith = getDividerWidth(date);
                         return GestureDetector(
                           onTap: () {
                             Navigator.push(
@@ -534,12 +607,12 @@ class _TripsPageState extends State<TripsPage> {
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text(
-                                            tickets[index]["DEPARTURE_DATE"],
+                                            getDate(tickets[index]["DEPARTURE_DATE"]),
                                             style: const TextStyle(
                                                 fontWeight: FontWeight.w500),
                                           ),
                                           Text(
-                                            tickets[index]["DESTINATION_DATE"],
+                                            getDate(tickets[index]["DESTINATION_DATE"]),
                                             style: const TextStyle(
                                                 fontWeight: FontWeight.w500),
                                           ),
@@ -570,7 +643,7 @@ class _TripsPageState extends State<TripsPage> {
                                                 ),
                                               ),
                                               Text(
-                                                  tickets[index]["ROUTE_TIME"]),
+                                                  date),
                                               Padding(
                                                 padding:
                                                     const EdgeInsets.fromLTRB(

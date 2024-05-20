@@ -64,7 +64,7 @@ class _BusAdminPageState extends State<BusAdminPage> {
             });
           }
           else{
-            _showDialog('Маршрутка c таким номером уже существует', 'Успех');
+            _showDialog('Маршрутка c таким номером уже существует', 'Ошибка');
           }
         }
       }
@@ -105,7 +105,7 @@ class _BusAdminPageState extends State<BusAdminPage> {
       });
     }
     else{
-      _showDialog('Вы не можете изменить маршрутку с этим номером, т.к. она закреплена за маршрутом', 'Ошибка');
+      _showDialog('Вы не можете удалить маршрутку с этим номером, т.к. она закреплена за маршрутом', 'Ошибка');
     }
   }
 

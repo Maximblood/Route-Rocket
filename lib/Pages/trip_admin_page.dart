@@ -123,6 +123,14 @@ class _TripAdminPageState extends State<TripAdminPage> {
     });
   }
 
+  String getDate(String unformattedDate){
+    DateTime date = DateTime.parse(unformattedDate);
+
+    String formattedDate = DateFormat('dd MMMM', 'ru').format(date); // 'ru' указывает, что мы хотим использовать русский язык для месяца
+
+    return formattedDate;
+  }
+
 
   Future<void> _getTripsDelete() async {
     final dbHelper = Provider.of<DatabaseNotifier>(context, listen: false).databaseHelper;
@@ -1432,8 +1440,8 @@ Future<void> _getDriversUpdate() async {
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Text(_filteredTripsList[index]['DEPARTURE_DATE'], style: const TextStyle(fontWeight: FontWeight.w500),),
-                                          Text(_filteredTripsList[index]['DESTINATION_DATE'], style: const TextStyle(fontWeight: FontWeight.w500),)
+                                          Text(getDate(_filteredTripsList[index]['DEPARTURE_DATE']), style: const TextStyle(fontWeight: FontWeight.w500),),
+                                          Text(getDate(_filteredTripsList[index]['DESTINATION_DATE']), style: const TextStyle(fontWeight: FontWeight.w500),)
                                         ],
                                       ),
                                       Row(

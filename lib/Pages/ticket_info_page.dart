@@ -32,6 +32,63 @@ class _TicketInfoPageState extends State<TicketInfoPage> {
     _ticketFuture = TicketHandler(dbHelper.db).getInfoAboutTicket(selectedTicketId);
   }
 
+  String _getDate(String date){
+    String routeTime = '';
+    bool daysAdded = false;
+    bool hoursAdded = false;
+
+
+    if(date[0] == '0' && date[1] != '0'){
+      routeTime += '${date[1]} д';
+      daysAdded = true;
+    }
+    else if((date[0] != '0' && date[1] != '0') || (date[0] != '0' && date[1] == '0')){
+      routeTime += '${date[0]}${date[1]} д';
+      daysAdded = true;
+    }
+    else{
+      routeTime += '';
+      daysAdded = false;
+    }
+
+    if(date[5] == '0' && date[6] != '0'){
+      if(daysAdded){
+        routeTime += " ";
+      }
+      routeTime += '${date[6]} ч';
+      hoursAdded = true;
+    }
+    else if((date[5] != '0' && date[6] != '0') || (date[5] != '0' && date[6] == '0')){
+      if(daysAdded){
+        routeTime += " ";
+      }
+      routeTime += '${date[5]}${date[6]} ч';
+      hoursAdded = true;
+    }
+    else{
+      routeTime += '';
+      hoursAdded = false;
+    }
+
+
+    if(date[10] == '0' && date[11] != '0'){
+      if(hoursAdded){
+        routeTime += " ";
+      }
+      routeTime += '${date[10]} м';
+    }
+    else if((date[10] != '0' && date[11] != '0') || (date[10] != '0' && date[11] == '0')){
+      if(hoursAdded){
+        routeTime += " ";
+      }
+      routeTime += '${date[10]}${date[11]} м';
+    }
+    else{
+      routeTime += '';
+    }
+
+    return routeTime;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -108,10 +165,13 @@ class _TicketInfoPageState extends State<TicketInfoPage> {
                                           Column(
                                             children: [
                                               Text('${tickets[0]['DepartureCityName']}', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                                              Text('${tickets[0]['LandingFromCityName']}', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                                              Container(
+                                                width: 200,
+                                                child: Text('${tickets[0]['LandingFromCityName']}', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis,),
+                                              ),
                                               SizedBox(height: 20,),
                                               Text('${tickets[0]['DestinationCityName']}', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                                              Text('${tickets[0]['LandingToCityName']}', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                                              Text('${tickets[0]['LandingToCityName']}', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis,),
                                             ],
                                           ),
                                         ],
@@ -120,13 +180,13 @@ class _TicketInfoPageState extends State<TicketInfoPage> {
                                   ),
                                 ),
                                 SizedBox(height: 10,),
-                                Text('${tickets[0]['ROUTE_TIME']} в пути', style: TextStyle(fontSize: 20)),
+                                Text('${_getDate(tickets[0]['ROUTE_TIME'])} в пути', style: TextStyle(fontSize: 20)),
                                 SizedBox(height: 3,),
                                 Text('Водитель: ${tickets[0]['DriverName']} ${tickets[0]['DriverLastName']}' , style: TextStyle(fontSize: 20)),
                                 SizedBox(height: 3,),
                                 Text('Бус: ${tickets[0]['BUSBRAND']} (${tickets[0]['BUSNUMBER']})' , style: TextStyle(fontSize: 20)),
                                 SizedBox(height: 3,),
-                                Text('Заказчик: ${tickets[0]['ClientName']} ${tickets[0]['ClientLastName']}' , style: TextStyle(fontSize: 20)),
+                                Text('Заказчик: ${tickets[0]['ClientName']} ${tickets[0]['ClientLastName']}' , style: TextStyle(fontSize: 20), maxLines: 1, overflow: TextOverflow.ellipsis,),
                                 SizedBox(height: 3,),
                                 Text('Телефон заказчика: ${tickets[0]['ClientTelephone']}' , style: TextStyle(fontSize: 20)),
                                 SizedBox(height: 3,),

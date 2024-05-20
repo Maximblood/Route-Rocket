@@ -96,6 +96,7 @@ class TripHandler{
     INNER JOIN CITY as CITY_DEPARTURE ON ROUTE.POINT_OF_DEPARTUREID = CITY_DEPARTURE.CITYNAMEID
     INNER JOIN CITY as CITY_DESTINATION ON ROUTE.POINT_OF_DESTINATIONID = CITY_DESTINATION.CITYNAMEID
     WHERE CITY_DEPARTURE.CITYNAMEID = ? and CITY_DESTINATION.CITYNAMEID = ? and $tableName.$columnDepartureDate = ? and $tableName.$columnStatus = ? 
+    ORDER BY TIME($tableName.$columnDepartureTime)
   ''';
 
     List<Map<String, dynamic>> results = await db.rawQuery(sqlQuery, [pointOfDeparture, pointOfDestination, routeTime, 'AVAILABLE']);
